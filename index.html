@@ -1,101 +1,1044 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>关于我 - hukecc</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #fff6f6, #ffe9f1);
-      color: #333;
-    }
-    header {
-      background-color: #ffb6c1;
-      padding: 30px 0;
-      text-align: center;
-      color: white;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 36px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    section {
-      margin-bottom: 60px;
-    }
-    h2 {
-      color: #d6336c;
-      margin-bottom: 10px;
-    }
-    .project {
-      background-color: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    .project h3 {
-      margin-top: 0;
-    }
-    footer {
-      text-align: center;
-      padding: 30px;
-      background-color: #ffe1e8;
-      font-size: 14px;
-      color: #666;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽车保养店管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .logo-container {
+            text-align: center;
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            list-style: none;
+            padding: 20px 0;
+        }
+        
+        .nav-links li {
+            position: relative;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links li:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-links li.active {
+            background: var(--secondary);
+        }
+        
+        .nav-links li i {
+            width: 30px;
+            font-size: 18px;
+        }
+        
+        /* 主内容区样式 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 顶部状态栏 */
+        .topbar {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 99;
+        }
+        
+        .topbar .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--light);
+            border-radius: 30px;
+            padding: 8px 15px;
+            width: 300px;
+        }
+        
+        .topbar .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 5px 10px;
+            width: 100%;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info .notification {
+            position: relative;
+            margin-right: 25px;
+            font-size: 20px;
+        }
+        
+        .user-info .notification .badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* 仪表盘指标卡片 */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .metric-card .metric-title {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .metric-card .metric-trend {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .metric-card .metric-trend.up {
+            color: var(--success);
+        }
+        
+        .metric-card .metric-trend.down {
+            color: var(--accent);
+        }
+        
+        /* 内容区 */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .content-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        /* 表格样式 */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .edit-btn {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .delete-btn {
+            background: var(--accent);
+            color: white;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        /* 图表容器 */
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .logo span, .nav-links li span {
+                display: none;
+            }
+            
+            .logo i, .nav-links li i {
+                margin-right: 0;
+                font-size: 24px;
+            }
+            
+            .nav-links li {
+                text-align: center;
+                padding: 20px 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .topbar .search-box {
+                width: 200px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>你好，我是 hukecc</h1>
-    <p>一个热爱创意项目与代码生活的开发者</p>
-  </header>
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <span>汽车保养管家</span>
+            </div>
+        </div>
+        
+        <ul class="nav-links">
+            <li class="active" data-target="dashboard">
+                <i class="fas fa-home"></i>
+                <span>控制面板</span>
+            </li>
+            <li data-target="inventory">
+                <i class="fas fa-warehouse"></i>
+                <span>仓库管理</span>
+            </li>
+            <li data-target="worklog">
+                <i class="fas fa-clipboard-list"></i>
+                <span>工作记录</span>
+            </li>
+            <li data-target="transactions">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>流水记账</span>
+            </li>
+            <li data-target="reports">
+                <i class="fas fa-chart-line"></i>
+                <span>财务报表</span>
+            </li>
+            <li data-target="settings">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 顶部状态栏 -->
+        <div class="topbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="搜索...">
+            </div>
+            
+            <div class="user-info">
+                <div class="notification">
+                    <i class="far fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="avatar">张</div>
+                <div>张经理</div>
+            </div>
+        </div>
+        
+        <!-- 指标卡片 -->
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-title">本月收入</div>
+                <div class="metric-value">¥85,420</div>
+                <div class="metric-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>12.5% 同比增长</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">本月支出</div>
+                <div class="metric-value">¥32,150</div>
+                <div class="metric-trend down">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>5.3% 同比减少</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">当前库存</div>
+                <div class="metric-value">342 件</div>
+                <div class="metric-trend">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>库存周转率: 2.8</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">待处理工单</div>
+                <div class="metric-value">12 个</div>
+                <div class="metric-trend">
+                    <i class="fas fa-tasks"></i>
+                    <span>今日完成: 8个</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 内容区 -->
+        <div class="content">
+            <!-- 仪表盘 -->
+            <div id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2 class="section-title">经营概览</h2>
+                    <div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i> 导出报表
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2 class="section-title">待处理工单</h2>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>工单号</th>
+                                <th>车牌号</th>
+                                <th>服务类型</th>
+                                <th>预约时间</th>
+                                <th>技师</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>WO-20230715-001</td>
+                                <td>京A·X1234</td>
+                                <td>常规保养</td>
+                                <td>2023-07-15 10:00</td>
+                                <td>王师傅</td>
+                                <td><span class="badge" style="background: #f39c12; color: white; padding: 3px 8px; border-radius: 12px;">进行中</span></td>
+                                <td>
+                                    <button class="action-btn edit-btn">查看</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>WO-20230715-002</td>
+                                <td>京B·Y5678</td>
+                                <td>轮胎更换</td>
+                                <td>2023-07-15 11:30</td>
+                                <td>李师傅</td>
+                                <td><span class="badge" style="background: #3498db; color: white; padding: 3px 8px; border-radius: 12px;">待处理</span></td>
+                                <td>
+                                    <button class="action-btn edit-btn">查看</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>WO-20230715-003</td>
+                                <td>京C·Z9012</td>
+                                <td>发动机检修</td>
+                                <td>2023-07-15 14:00</td>
+                                <td>张师傅</td>
+                                <td><span class="badge" style="background: #3498db; color: white; padding: 3px 8px; border-radius: 12px;">待处理</span></td>
+                                <td>
+                                    <button class="action-btn edit-btn">查看</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 仓库管理 -->
+            <div id="inventory" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">仓库管理</h2>
+                    <div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 新增物品
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>物品ID</th>
+                                <th>物品名称</th>
+                                <th>分类</th>
+                                <th>当前库存</th>
+                                <th>单位</th>
+                                <th>单价(元)</th>
+                                <th>总价值(元)</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>P-10001</td>
+                                <td>全合成机油 5W-30</td>
+                                <td>润滑油</td>
+                                <td>58</td>
+                                <td>桶</td>
+                                <td>320.00</td>
+                                <td>18,560.00</td>
+                                <td>
+                                    <button class="action-btn edit-btn">入库</button>
+                                    <button class="action-btn delete-btn">出库</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P-10002</td>
+                                <td>机油滤清器</td>
+                                <td>滤清器</td>
+                                <td>142</td>
+                                <td>个</td>
+                                <td>35.00</td>
+                                <td>4,970.00</td>
+                                <td>
+                                    <button class="action-btn edit-btn">入库</button>
+                                    <button class="action-btn delete-btn">出库</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P-10003</td>
+                                <td>空气滤清器</td>
+                                <td>滤清器</td>
+                                <td>86</td>
+                                <td>个</td>
+                                <td>65.00</td>
+                                <td>5,590.00</td>
+                                <td>
+                                    <button class="action-btn edit-btn">入库</button>
+                                    <button class="action-btn delete-btn">出库</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P-10004</td>
+                                <td>刹车片 (前轮)</td>
+                                <td>刹车系统</td>
+                                <td>32</td>
+                                <td>对</td>
+                                <td>280.00</td>
+                                <td>8,960.00</td>
+                                <td>
+                                    <button class="action-btn edit-btn">入库</button>
+                                    <button class="action-btn delete-btn">出库</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P-10005</td>
+                                <td>防冻液 -30℃</td>
+                                <td>冷却系统</td>
+                                <td>45</td>
+                                <td>桶</td>
+                                <td>80.00</td>
+                                <td>3,600.00</td>
+                                <td>
+                                    <button class="action-btn edit-btn">入库</button>
+                                    <button class="action-btn delete-btn">出库</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 工作记录 -->
+            <div id="worklog" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">每日工作记录</h2>
+                    <div>
+                        <button class="btn btn-success">
+                            <i class="fas fa-plus"></i> 新增工单
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>日期</label>
+                            <input type="date" class="form-control" value="2023-07-15">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>负责人</label>
+                            <select class="form-control">
+                                <option>张经理</option>
+                                <option>王师傅</option>
+                                <option>李师傅</option>
+                                <option>赵师傅</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>工单号</th>
+                                <th>车牌号</th>
+                                <th>服务项目</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
+                                <th>使用物料</th>
+                                <th>工时(小时)</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>WO-20230715-001</td>
+                                <td>京A·X1234</td>
+                                <td>常规保养</td>
+                                <td>09:30</td>
+                                <td>11:15</td>
+                                <td>机油×1, 机滤×1</td>
+                                <td>1.75</td>
+                                <td>已完成</td>
+                                <td>
+                                    <button class="action-btn edit-btn">编辑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>WO-20230715-002</td>
+                                <td>京B·CD5678</td>
+                                <td>轮胎更换</td>
+                                <td>10:00</td>
+                                <td>11:45</td>
+                                <td>轮胎×4</td>
+                                <td>1.75</td>
+                                <td>已完成</td>
+                                <td>
+                                    <button class="action-btn edit-btn">编辑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>WO-20230715-003</td>
+                                <td>京C·EF9012</td>
+                                <td>空调清洗</td>
+                                <td>13:30</td>
+                                <td>14:45</td>
+                                <td>空调清洗剂×1</td>
+                                <td>1.25</td>
+                                <td>进行中</td>
+                                <td>
+                                    <button class="action-btn edit-btn">编辑</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 流水记账 -->
+            <div id="transactions" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">每日流水记录</h2>
+                    <div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 新增记录
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>日期范围</label>
+                            <input type="date" class="form-control" value="2023-07-01">
+                            <span style="margin: 0 10px;">至</span>
+                            <input type="date" class="form-control" value="2023-07-15">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>交易类型</label>
+                            <select class="form-control">
+                                <option>全部</option>
+                                <option>收入</option>
+                                <option>支出</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>流水号</th>
+                                <th>类型</th>
+                                <th>工单号</th>
+                                <th>摘要</th>
+                                <th>金额(元)</th>
+                                <th>支付方式</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2023-07-15</td>
+                                <td>T-20230715001</td>
+                                <td><span style="color: var(--success);">收入</span></td>
+                                <td>WO-20230715-001</td>
+                                <td>常规保养服务</td>
+                                <td>680.00</td>
+                                <td>微信支付</td>
+                                <td>
+                                    <button class="action-btn edit-btn">详情</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2023-07-15</td>
+                                <td>T-20230715002</td>
+                                <td><span style="color: var(--accent);">支出</span></td>
+                                <td>-</td>
+                                <td>采购机油10桶</td>
+                                <td>-3,200.00</td>
+                                <td>银行转账</td>
+                                <td>
+                                    <button class="action-btn edit-btn">详情</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2023-07-15</td>
+                                <td>T-20230715003</td>
+                                <td><span style="color: var(--success);">收入</span></td>
+                                <td>WO-20230715-002</td>
+                                <td>轮胎更换服务</td>
+                                <td>2,450.00</td>
+                                <td>支付宝</td>
+                                <td>
+                                    <button class="action-btn edit-btn">详情</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2023-07-14</td>
+                                <td>T-20230714001</td>
+                                <td><span style="color: var(--accent);">支出</span></td>
+                                <td>-</td>
+                                <td>房租水电费</td>
+                                <td>-8,500.00</td>
+                                <td>银行转账</td>
+                                <td>
+                                    <button class="action-btn edit-btn">详情</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 财务报表 -->
+            <div id="reports" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">财务报表</h2>
+                    <div>
+                        <button class="btn btn-warning">
+                            <i class="fas fa-print"></i> 打印报表
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>选择月份</label>
+                            <input type="month" class="form-control" value="2023-07">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>报表类型</label>
+                            <select class="form-control">
+                                <option>月度汇总</option>
+                                <option>收入明细</option>
+                                <option>支出明细</option>
+                                <option>库存报表</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="financeChart"></canvas>
+                </div>
+                
+                <div style="display: flex; gap: 20px; margin-top: 30px;">
+                    <div style="flex: 1; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);">
+                        <h3 style="margin-bottom: 20px; color: var(--dark);">收入分类</h3>
+                        <canvas id="incomeChart" height="250"></canvas>
+                    </div>
+                    <div style="flex: 1; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);">
+                        <h3 style="margin-bottom: 20px; color: var(--dark);">支出分类</h3>
+                        <canvas id="expenseChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <div class="container">
-    <section>
-      <h2>关于我</h2>
-      <p>
-        我目前专注于智能硬件与嵌入式系统的开发，喜欢用技术解决生活中的小问题。
-        在过去的项目中，我设计了语音控制巡逻小车、环境监测模块以及一些网页交互应用。
-        我也在学习网页设计，希望能把技术和美学结合在一起。
-      </p>
-    </section>
-
-    <section>
-      <h2>项目合集</h2>
-
-      <div class="project">
-        <h3>🎙️ 智能语音巡逻小车</h3>
-        <p>基于 STM32 + 天问 ARS Pro 语音识别模块，实现语音控制、避障、循迹与蓝牙遥控。</p>
-      </div>
-
-      <div class="project">
-        <h3>🌡️ 环境监测显示系统</h3>
-        <p>通过 MQ135、DHT22 与 OLED 实现温湿度和空气质量显示与报警。</p>
-      </div>
-
-      <div class="project">
-        <h3>🌸 表白网页生成器</h3>
-        <p>一个浪漫的樱花飘落网页，集成诗句与背景音乐《告白气球》，支持 GitHub Pages 部署。</p>
-      </div>
-
-      <div class="project">
-        <h3>📄 个人简历网页</h3>
-        <p>用 HTML+CSS 制作的响应式简历页面，适合展示技术栈与项目经验。</p>
-      </div>
-
-    </section>
-  </div>
-
-  <footer>
-    © 2025 hukecc · 本页由爱与代码驱动构建
-  </footer>
+    <script>
+        // 导航菜单切换
+        document.querySelectorAll('.nav-links li').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.nav-links li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // 添加当前active类
+                this.classList.add('active');
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+        
+        // 初始化收入图表
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月'],
+                datasets: [{
+                    label: '月收入 (万元)',
+                    data: [6.8, 7.2, 7.5, 8.1, 7.9, 8.5, 9.2, 8.0, 7.5, 8.8, 9.5, 10.2],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 初始化财务图表
+        const financeCtx = document.getElementById('financeChart').getContext('2d');
+        const financeChart = new Chart(financeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+                datasets: [
+                    {
+                        label: '收入',
+                        data: [72, 75, 88, 95, 102, 68, 85],
+                        backgroundColor: '#2ecc71',
+                        borderRadius: 5
+                    },
+                    {
+                        label: '支出',
+                        data: [28, 30, 32, 35, 38, 30, 32],
+                        backgroundColor: '#e74c3c',
+                        borderRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 收入分类饼图
+        const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+        const incomeChart = new Chart(incomeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['常规保养', '维修服务', '配件销售', '美容服务', '其他服务'],
+                datasets: [{
+                    data: [45, 25, 15, 10, 5],
+                    backgroundColor: [
+                        '#3498db',
+                        '#2ecc71',
+                        '#9b59b6',
+                        '#f1c40f',
+                        '#e74c3c'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+        
+        // 支出分类饼图
+        const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+        const expenseChart = new Chart(expenseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['配件采购', '工资支出', '房租水电', '设备维护', '其他支出'],
+                datasets: [{
+                    data: [40, 30, 15, 10, 5],
+                    backgroundColor: [
+                        '#e74c3c',
+                        '#f39c12',
+                        '#3498db',
+                        '#9b59b6',
+                        '#2ecc71'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
